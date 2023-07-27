@@ -5,6 +5,17 @@ class Blog:
         self.posts = []
         self.current_user = None
 
+    # Method that will get a post by its ID or return None if no post with that ID
+    def _get_post_from_id(self, post_id):
+        # Loop through all of the posts on the blog
+        for post in self.posts:
+            # If the post's ID matches the post_id argument
+            if post.id == post_id:
+                # return the post instance
+                return post
+        # If we loop through all of the posts and don't find a post with that ID, return None
+        return None
+
     # Method to create a new user instance and add to the Blog's users
     def create_new_user(self):
         # Get user info from input
@@ -70,6 +81,14 @@ class Blog:
         # If self.posts is empty
         else:
             print("There are currently no posts for this blog :(")
+
+    # Method to view SINGLE post by ID
+    def view_post(self, post_id):
+        post = self._get_post_from_id(post_id)
+        if post:
+            print(post)
+        else:
+            print(f"Post with an ID of {post_id} does not exist") # 404 Not Found
     
 
 
@@ -128,12 +147,12 @@ def run_blog():
         # If there is currently nobody logged in to the blog (aka the current_user is None)
         if my_blog.current_user is None:
             # Print our menu options
-            print("1. Sign Up\n2. Log In\n3. View All Posts\n5. Quit")
+            print("1. Sign Up\n2. Log In\n3. View All Posts\n4. View Single Post\n5. Quit")
             # Ask the user which option they would like to do
             to_do = input('Which option would you like to do? ')
             # Keep asking is user does not choose a valid option
-            while to_do not in {'1', '5', '2', '3'}:
-                to_do = input('Invalid option. Please choose 1, 2, 3, or 5. ')
+            while to_do not in {'1', '5', '2', '3', '4'}:
+                to_do = input('Invalid option. Please choose 1, 2, 3, 4, or 5. ')
             # If the user chooses 5, quit the program
             if to_do == '5':
                 print('Thanks for checking out the blog!')
@@ -148,19 +167,36 @@ def run_blog():
                 my_blog.log_user_in()
             elif to_do == '3':
                 my_blog.view_posts()
+            elif to_do == '4':
+                # Get the ID of the post the user would like to view
+                post_id = input('What is the ID of the post you would like to view? ')
+                # If the input is not a digit, re-ask the question
+                while not post_id.isdigit():
+                    post_id = input('Invalid ID. Must be an integer. Please enter ID again: ')
+                # Call the view single post method with the post_id as an argument
+                my_blog.view_post(int(post_id))
+
         # If there is a logged in user (aka current_user is not None, it is a user instance)
         else:
             # Print the menu options for a logged in user
-            print('1. Log Out\n2. Create A New Post\n3. View All Posts')
+            print('1. Log Out\n2. Create A New Post\n3. View All Posts\n4. View Single Post')
             to_do = input('Which option would you like to do? ')
-            while to_do not in {'1', '2', '3'}:
-                to_do = input('Invalid option. Please choose 1, 2, or 3. ')
+            while to_do not in {'1', '2', '3', '4'}:
+                to_do = input('Invalid option. Please choose 1, 2, 3, or 4. ')
             if to_do == '1':
                 my_blog.log_user_out()
             elif to_do == '2':
                 my_blog.create_new_post()
             elif to_do == '3':
                 my_blog.view_posts()
+            elif to_do == '4':
+                # Get the ID of the post the user would like to view
+                post_id = input('What is the ID of the post you would like to view? ')
+                # If the input is not a digit, re-ask the question
+                while not post_id.isdigit():
+                    post_id = input('Invalid ID. Must be an integer. Please enter ID again: ')
+                # Call the view single post method with the post_id as an argument
+                my_blog.view_post(int(post_id))
 
 
 # Call the function to actually start the blog
