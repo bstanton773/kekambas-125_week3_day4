@@ -89,6 +89,38 @@ class Blog:
             print(post)
         else:
             print(f"Post with an ID of {post_id} does not exist") # 404 Not Found
+
+    # Method to edit a post by ID
+    def edit_post(self, post_id):
+        post = self._get_post_from_id(post_id)
+        if post:
+            # Check that the user is logged in AND that the user is the author of the post
+            if post.author == self.current_user:
+                # Print the post so the user can see what they are editing
+                print(post)
+
+                # Ask for an edited title or have them enter skip to keep the current title
+                new_title = input("Please enter a new title or type 'skip' to keep the current title: ")
+                if new_title.lower() != 'skip':
+                    # Set the title attribute of the post to the new title
+                    post.title = new_title
+
+                # Ask for an edited title or have them enter skip to keep the current title
+                new_body = input("Please enter a new body or type 'skip' to keep the current body: ")
+                if new_body.lower() != 'skip':
+                    # Set the body attribute of the post to the new body
+                    post.body = new_body
+
+                print(f"{post.title} has been updated!")
+
+            # If the user is not the author, but is logged in
+            elif self.current_user is not None:
+                print("You do not have permission to update this post") # 403 Forbidden
+            # If not logged in at all
+            else:
+                print("You must be logged in to perform this action") # 401 Unauthorized
+        else:
+            print(f"Post with an ID of {post_id} does not exist") # 404 Not Found
     
 
 
@@ -142,6 +174,15 @@ def run_blog():
     print('Welcome to the blog. I built it myself.')
     # Create an instance of the blog
     my_blog = Blog()
+
+    # CREATE SOME INITAL DATA TO START
+    user1 = User('brians', 'abc123')
+    my_blog.users.append(user1)
+    post1 = Post('Starter', 'This post was written as a starter', user1)
+    my_blog.posts.append(post1)
+    post2 = Post('Finisher', 'This is another post and I gave it a dumb title.', user1)
+    my_blog.posts.append(post2)
+    
     # Start "running" the blog until the user quits
     while True:
         # If there is currently nobody logged in to the blog (aka the current_user is None)
@@ -179,10 +220,10 @@ def run_blog():
         # If there is a logged in user (aka current_user is not None, it is a user instance)
         else:
             # Print the menu options for a logged in user
-            print('1. Log Out\n2. Create A New Post\n3. View All Posts\n4. View Single Post')
+            print('1. Log Out\n2. Create A New Post\n3. View All Posts\n4. View Single Post\n5. Edit A Post')
             to_do = input('Which option would you like to do? ')
-            while to_do not in {'1', '2', '3', '4'}:
-                to_do = input('Invalid option. Please choose 1, 2, 3, or 4. ')
+            while to_do not in {'1', '2', '3', '4', '5'}:
+                to_do = input('Invalid option. Please choose 1, 2, 3, 4, or 5. ')
             if to_do == '1':
                 my_blog.log_user_out()
             elif to_do == '2':
@@ -197,6 +238,14 @@ def run_blog():
                     post_id = input('Invalid ID. Must be an integer. Please enter ID again: ')
                 # Call the view single post method with the post_id as an argument
                 my_blog.view_post(int(post_id))
+            elif to_do == '5':
+                # Get the ID of the post the user would like to edit
+                post_id = input('What is the ID of the post you would like to edit? ')
+                # If the input is not a digit, re-ask the question
+                while not post_id.isdigit():
+                    post_id = input('Invalid ID. Must be an integer. Please enter ID again: ')
+                # Call the edit a post method with the post_id as an argument
+                my_blog.edit_post(int(post_id))
 
 
 # Call the function to actually start the blog
