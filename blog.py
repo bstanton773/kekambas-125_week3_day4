@@ -1,3 +1,5 @@
+from random import randint
+from ascii_magic import AsciiArt
 
 class Blog:
     def __init__(self):
@@ -160,6 +162,7 @@ class User:
         self.password = hash(password)
         self.id = User.id_counter
         User.id_counter += 1
+        self.image_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{randint(1,150)}.png"
 
     def __str__(self):
         return self.username
@@ -169,6 +172,12 @@ class User:
 
     def check_password(self, password_attempt):
         return self.password == hash(password_attempt)
+
+    def display_info(self):
+        prof_image = AsciiArt.from_url(self.image_url)
+        prof_image.to_terminal()
+        print(self.username)
+
 
 class Post:
     id_counter = 1
@@ -247,10 +256,10 @@ def run_blog():
         # If there is a logged in user (aka current_user is not None, it is a user instance)
         else:
             # Print the menu options for a logged in user
-            print('1. Log Out\n2. Create A New Post\n3. View All Posts\n4. View Single Post\n5. Edit A Post\n6. Delete A Post')
+            print('1. Log Out\n2. Create A New Post\n3. View All Posts\n4. View Single Post\n5. Edit A Post\n6. Delete A Post\n7. My Info')
             to_do = input('Which option would you like to do? ')
-            while to_do not in {'1', '2', '3', '4', '5', '6'}:
-                to_do = input('Invalid option. Please choose 1, 2, 3, 4, 5 or 6. ')
+            while to_do not in {'1', '2', '3', '4', '5', '6', '7'}:
+                to_do = input('Invalid option. Please choose 1, 2, 3, 4, 5, 6, or 7. ')
             if to_do == '1':
                 my_blog.log_user_out()
             elif to_do == '2':
@@ -281,6 +290,9 @@ def run_blog():
                     post_id = input('Invalid ID. Must be an integer. Please enter ID again: ')
                 # Call the delete a post method with the post_id as an argument
                 my_blog.delete_post(int(post_id))
+            elif to_do == '7':
+                # Call the display method from the logged in user
+                my_blog.current_user.display_info()
 
 
 # Call the function to actually start the blog
