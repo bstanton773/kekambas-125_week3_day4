@@ -121,6 +121,33 @@ class Blog:
                 print("You must be logged in to perform this action") # 401 Unauthorized
         else:
             print(f"Post with an ID of {post_id} does not exist") # 404 Not Found
+
+    # Method to delete a post by ID
+    def delete_post(self, post_id):
+        post = self._get_post_from_id(post_id)
+        if post:
+            # Check that the user is the author of the post
+            if post.author == self.current_user:
+                print(post)
+
+                # Ask if they are sure
+                you_sure = input("Are you sure you want to delete this post? This action cannot be undone. Enter 'yes' or 'y' to delete: ").lower()
+
+                if you_sure == 'yes' or you_sure == 'y':
+                    # Remove the post from the blog's post list
+                    self.posts.remove(post)
+                    print(f"{post.title} has been removed from the blog")
+                else:
+                    print("Okay. We will not delete that post")
+
+            # If the user is not the author, but is logged in
+            elif self.current_user is not None:
+                print("You do not have permission to delete this post") # 403 Forbidden
+            # If not logged in at all
+            else:
+                print("You must be logged in to perform this action") # 401 Unauthorized
+        else:
+            print(f"Post with an ID of {post_id} does not exist") # 404 Not Found
     
 
 
@@ -220,10 +247,10 @@ def run_blog():
         # If there is a logged in user (aka current_user is not None, it is a user instance)
         else:
             # Print the menu options for a logged in user
-            print('1. Log Out\n2. Create A New Post\n3. View All Posts\n4. View Single Post\n5. Edit A Post')
+            print('1. Log Out\n2. Create A New Post\n3. View All Posts\n4. View Single Post\n5. Edit A Post\n6. Delete A Post')
             to_do = input('Which option would you like to do? ')
-            while to_do not in {'1', '2', '3', '4', '5'}:
-                to_do = input('Invalid option. Please choose 1, 2, 3, 4, or 5. ')
+            while to_do not in {'1', '2', '3', '4', '5', '6'}:
+                to_do = input('Invalid option. Please choose 1, 2, 3, 4, 5 or 6. ')
             if to_do == '1':
                 my_blog.log_user_out()
             elif to_do == '2':
@@ -246,6 +273,14 @@ def run_blog():
                     post_id = input('Invalid ID. Must be an integer. Please enter ID again: ')
                 # Call the edit a post method with the post_id as an argument
                 my_blog.edit_post(int(post_id))
+            elif to_do == '6':
+                # Get the ID of the post the user would like to delete
+                post_id = input('What is the ID of the post you would like to delete? ')
+                # If the input is not a digit, re-ask the question
+                while not post_id.isdigit():
+                    post_id = input('Invalid ID. Must be an integer. Please enter ID again: ')
+                # Call the delete a post method with the post_id as an argument
+                my_blog.delete_post(int(post_id))
 
 
 # Call the function to actually start the blog
